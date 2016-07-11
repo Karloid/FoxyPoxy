@@ -48,7 +48,8 @@ public class TLClient {
         Message message = update.message;
         if (message != null) {
             System.out.println(message.from.firstName + " " + message.from.lastName + ": " + message.text);
-            String ourMessage = "Hello " + message.from.firstName + " " + message.from.lastName + ". You are cool :>";
+            String ourMessage = "Hello " + message.from.firstName + " " +
+                    message.from.lastName + (Math.random() > 0.5f ? ". You are cool :>" : ". Sorry, you not cool");
             telegramApi.sendMessage(message.chat.id, ourMessage)
                     .enqueue(new VoidCallback());
         }
