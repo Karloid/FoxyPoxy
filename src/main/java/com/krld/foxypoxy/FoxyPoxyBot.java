@@ -22,9 +22,26 @@ public class FoxyPoxyBot implements BotDelegate {
                 message.from.lastName + (Math.random() > 0.5f ? ". You are cool :>" : ". Sorry, you not cool");
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
         keyboard.inlineKeyboard = new ArrayList<>();
+
         ArrayList<InlineKeyboardButton> buttons = new ArrayList<>();
-        buttons.add(new InlineKeyboardButton("Press me"));
+        buttons.add(new InlineKeyboardButton(" "));
+        buttons.add(new InlineKeyboardButton("⬆️⬆️⬆️"));
+        buttons.add(new InlineKeyboardButton(" "));
         keyboard.inlineKeyboard.add(buttons);
+
+        buttons = new ArrayList<>();
+        buttons.add(new InlineKeyboardButton("⬅⬅⬅️️"));
+        buttons.add(new InlineKeyboardButton("Refresh"));
+        buttons.add(new InlineKeyboardButton("➡➡➡️"));
+        keyboard.inlineKeyboard.add(buttons);
+
+        buttons = new ArrayList<>();
+        buttons.add(new InlineKeyboardButton(" "));
+        buttons.add(new InlineKeyboardButton("⬇⬇️⬇️️"));
+        buttons.add(new InlineKeyboardButton(" "));
+        keyboard.inlineKeyboard.add(buttons);
+
+
         tlClient.sendMessage(message.chat.id, ourMessage, keyboard);
     }
 }
