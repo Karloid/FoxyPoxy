@@ -1,16 +1,13 @@
-package com.krld.foxypoxy;
+package com.krld.foxypoxy.network;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.krld.foxypoxy.BotDelegate;
 import com.krld.foxypoxy.api.TelegramApi;
 import com.krld.foxypoxy.models.Message;
 import com.krld.foxypoxy.models.Update;
-import com.krld.foxypoxy.network.LoggingInterceptor;
 import okhttp3.OkHttpClient;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -25,9 +22,15 @@ public class TLClient {
 
     private Integer offset;
     private TelegramApi telegramApi;
+    private BotDelegate delegate;
+
+    public TLClient(BotDelegate delegate) {
+        telegramApi = setupTelegramApi();
+        this.delegate = delegate;
+        delegate.setClient(this);
+    }
 
     public void run() {
-        telegramApi = setupTelegramApi();
         offset = 0;
         while (true) {
             try {
@@ -47,11 +50,7 @@ public class TLClient {
     private void processUpdate(Update update) {
         Message message = update.message;
         if (message != null) {
-            System.out.println(message.from.firstName + " " + message.from.lastName + ": " + message.text);
-            String ourMessage = "Hello " + message.from.firstName + " " +
-                    message.from.lastName + (Math.random() > 0.5f ? ". You are cool :>" : ". Sorry, you not cool");
-            telegramApi.sendMessage(message.chat.id, ourMessage)
-                    .enqueue(new VoidCallback());
+            delegate.onMessage(message);
         }
     }
 
@@ -76,15 +75,7 @@ public class TLClient {
         return retrofit.create(TelegramApi.class);
     }
 
-    private static class VoidCallback implements Callback<Void> {
-        @Override
-        public void onResponse(Call<Void> call, Response<Void> response) {
-
-        }
-
-        @Override
-        public void onFailure(Call<Void> call, Throwable t) {
-
-        }
+    public void sendMessage(Integer chatId, String message) {
+        telegramApi.sendMessage(chatId, message).enqueue(new VoidCallback());
     }
 }
