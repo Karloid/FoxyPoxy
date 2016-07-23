@@ -5,7 +5,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.krld.foxypoxy.BotDelegate;
 import com.krld.foxypoxy.api.TelegramApi;
+import com.krld.foxypoxy.models.InlineKeyboardMarkup;
 import com.krld.foxypoxy.models.Message;
+import com.krld.foxypoxy.models.SendMessageParams;
 import com.krld.foxypoxy.models.Update;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
@@ -76,6 +78,10 @@ public class TLClient {
     }
 
     public void sendMessage(Integer chatId, String message) {
-        telegramApi.sendMessage(chatId, message).enqueue(new VoidCallback());
+        telegramApi.sendMessage(chatId, message).enqueue(new VoidCallback<>());
+    }
+
+    public void sendMessage(Integer chatId, String messageText, InlineKeyboardMarkup inlineKeyboardMarkup) {
+        telegramApi.sendMessage(new SendMessageParams(chatId, messageText, inlineKeyboardMarkup)).enqueue(new VoidCallback<>());
     }
 }
