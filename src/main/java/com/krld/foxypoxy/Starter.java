@@ -1,6 +1,5 @@
 package com.krld.foxypoxy;
 
-import com.krld.foxypoxy.network.TLClientVerticle;
 import io.vertx.core.Vertx;
 
 public class Starter {

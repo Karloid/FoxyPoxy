@@ -1,4 +1,4 @@
-package com.krld.foxypoxy;
+package com.krld.foxypoxy.util;
 
 public class FLog {
     private static void print(String logTag, String s) {  //TODO saving into file

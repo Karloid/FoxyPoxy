@@ -1,8 +1,9 @@
-package com.krld.foxypoxy.network;
+package com.krld.foxypoxy;
 
 import com.google.gson.Gson;
-import com.krld.foxypoxy.Addresses;
-import com.krld.foxypoxy.FLog;
+import com.krld.foxypoxy.network.HttpDecorator;
+import com.krld.foxypoxy.util.Addresses;
+import com.krld.foxypoxy.util.FLog;
 import com.krld.foxypoxy.models.Update;
 import com.krld.foxypoxy.responses.ResponseGetUpdates;
 import com.krld.foxypoxy.util.JsonUtils;

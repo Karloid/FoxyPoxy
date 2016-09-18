@@ -1,4 +1,4 @@
-package com.krld.foxypoxy;
+package com.krld.foxypoxy.util;
 
 public class Addresses {
     static int index = 0;
