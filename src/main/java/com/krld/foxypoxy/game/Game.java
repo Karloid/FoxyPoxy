@@ -26,14 +26,18 @@ public class Game {
         Integer usrId = message.from.id;
         Player player = players.get(usrId);
         if (player == null) {
-            player = new Player(message.from, new Point(FOV_WIDTH / 2, FOV_HEIGHT / 2));
+            player = new Player(message, new Point(FOV_WIDTH / 2, FOV_HEIGHT / 2));
             if (Build.DEBUG) {
                 players.put(-1, new Player(-1, "Debug", new Point(2, 3)));
                 players.put(-2, new Player(-2, "Debug", new Point(4, 9)));
             }
             players.put(usrId, player);
+            return player;
         }
+        player.setMessageId(message.messageId);
+        player.setChatId(message.chat.id);
         return player;
+
     }
 
     public int[] getGroundMap() {
@@ -65,7 +69,7 @@ public class Game {
         Point playerPos = curPlayer.getPos();
         //calculate field of view
         int wX = Math.min(Math.max(playerPos.x - FOV_WIDTH / 2, 0), WORLD_WIDTH - FOV_WIDTH / 2);//window x
-        int wY = Math.min(Math.max(playerPos.y - FOV_HEIGHT / 2, 0), WORLD_HEIGHT - FOV_HEIGHT / 2);//window x
+        int wY = Math.min(Math.max(playerPos.y - FOV_HEIGHT / 2, 0), WORLD_HEIGHT - FOV_HEIGHT / 2);//window y
 
         StringBuilder sb = new StringBuilder();
         for (int y = wY; y < wY + FOV_HEIGHT; y++) {
@@ -114,7 +118,22 @@ public class Game {
             sb.append('\n');
 
         }
+        sb.append('\n');
+        for (int i = 0; i < FOV_WIDTH - 1; i++) {
+            sb.append('-');
+        }
+        if (Math.random() > 0.5) {
+            sb.append(' ');
+        }
         out = "`" + sb.toString() + "`"; //simple lang
         return out;
+    }
+
+    public java.util.List<Player> getPlayersAsList() {
+        return new ArrayList<>(players.values());
+    }
+
+    public Player getPlayerById(int id) {
+        return players.get(id);
     }
 }
