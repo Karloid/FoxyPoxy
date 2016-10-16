@@ -2,12 +2,14 @@ package com.krld.foxypoxy.network;
 
 import com.google.gson.Gson;
 import com.krld.foxypoxy.util.Action1;
+import com.krld.foxypoxy.util.FLog;
 import com.krld.foxypoxy.util.VertxUtils;
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientResponse;
 
 public class HttpDecorator {
+    private static final String LOG_TAG = "HttpDecorator";
     private final String token;
     private HttpClient httpClient;
     private Gson gson;
@@ -23,7 +25,8 @@ public class HttpDecorator {
     public <T> void post(String method, Object body, Action1<T> success, Action1<TlError> fail, Class<T> respClass) { //TODO calculate request time
         try {
             long startTime = System.currentTimeMillis();
-            httpClient.post(method, event -> handleResponse(success, fail, respClass, event, startTime))
+            FLog.d(LOG_TAG, "--> " + method);
+            httpClient.post(addBot(method), event -> handleResponse(success, fail, respClass, event, startTime, method))
                     .exceptionHandler(getExceptionHandler(fail))
                     .putHeader("Content-Type", "application/json")
                     .end(gson.toJson(body));
@@ -34,7 +37,8 @@ public class HttpDecorator {
     public <T> void put(String method, Object body, Action1<T> success, Action1<TlError> fail, Class<T> respClass) {
         try {
             long startTime = System.currentTimeMillis();
-            httpClient.put(method, event -> handleResponse(success, fail, respClass, event, startTime))
+            FLog.d(LOG_TAG, "--> " + method);
+            httpClient.put(addBot(method), event -> handleResponse(success, fail, respClass, event, startTime, method))
                     .exceptionHandler(getExceptionHandler(fail))
                     .putHeader("Content-Type", "application/json")
                     .end(gson.toJson(body));
@@ -45,7 +49,8 @@ public class HttpDecorator {
     public <T> void get(String method, Action1<T> success, Action1<TlError> fail, Class<T> respClass) {
         try {
             long startTime = System.currentTimeMillis();
-            httpClient.get(method, event -> handleResponse(success, fail, respClass, event, startTime))
+            FLog.d(LOG_TAG, "--> " + method);
+            httpClient.get(addBot(method), event -> handleResponse(success, fail, respClass, event, startTime, method))
                     .exceptionHandler(getExceptionHandler(fail))
                     .end();
         } catch (IllegalStateException ignore) {
@@ -56,7 +61,7 @@ public class HttpDecorator {
     public void getString(String method, Action1<String> success, Action1<TlError> fail) {
         try {
             long startTime = System.currentTimeMillis();//TODO refactor
-            httpClient.get(method, event -> handleResponse(success, fail, String.class, event, startTime))
+            httpClient.get(method, event -> handleResponse(success, fail, String.class, event, startTime, method))
                     .exceptionHandler(getExceptionHandler(fail))
                     .end();
         } catch (IllegalStateException ignore) {
@@ -72,10 +77,10 @@ public class HttpDecorator {
         };
     }
 
-    private <T> HttpClientResponse handleResponse(Action1<T> success, Action1<TlError> fail, Class<T> respClass, HttpClientResponse event, long startTime) {
+    private <T> HttpClientResponse handleResponse(Action1<T> success, Action1<TlError> fail, Class<T> respClass, HttpClientResponse event, long startTime, String method) {
         return event.bodyHandler(buffer -> {
-            //FLog.d("x", "requested processed in " + (System.currentTimeMillis() - startTime) + "ms");
             String response = buffer.getString(0, buffer.length());
+            FLog.d(LOG_TAG, "<-- (" + event.statusCode() + ") " + method + " in " + (System.currentTimeMillis() - startTime) + "ms\n" + response);
             if (event.statusCode() == 200) {
                 if (success == null) {
                     return;
@@ -104,5 +109,9 @@ public class HttpDecorator {
 
     public String getToken() {
         return token;
+    }
+
+    private String addBot(String method) {
+        return "/bot" + getToken() + method;
     }
 }

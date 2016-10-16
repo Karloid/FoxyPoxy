@@ -6,6 +6,6 @@ public class Starter {
     public static void main(String[] args) {
         Vertx vertx = Vertx.vertx();
         vertx.deployVerticle(new TLClientVerticle());
-        vertx.deployVerticle(new FoxyPoxyBotVerticle());
+        vertx.deployVerticle(new GameLogic());
     }
 }

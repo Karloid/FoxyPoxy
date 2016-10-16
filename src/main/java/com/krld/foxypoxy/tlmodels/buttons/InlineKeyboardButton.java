@@ -1,4 +1,4 @@
-package com.krld.foxypoxy.models.buttons;
+package com.krld.foxypoxy.tlmodels.buttons;
 
 
 public class InlineKeyboardButton {
@@ -8,11 +8,13 @@ public class InlineKeyboardButton {
     public String callbackData; ///< Optional. Data to be sent in a callback query to the bot when button is pressed
     public String switchInlineQuery;
 
-    public InlineKeyboardButton() {
+    public InlineKeyboardButton(String text, String callbackData) {
+        this.text = text;
+        this.callbackData = callbackData;
     }
 
     public InlineKeyboardButton(String text) {
         this.text = text;
-        callbackData = "test";
+        callbackData = "1";
     }
 }

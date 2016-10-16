@@ -1,4 +1,4 @@
-package com.krld.foxypoxy.models;
+package com.krld.foxypoxy.tlmodels;
 
 public class Update {
     public Integer updateId;

@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.krld.foxypoxy.network.HttpDecorator;
 import com.krld.foxypoxy.util.Addresses;
 import com.krld.foxypoxy.util.FLog;
-import com.krld.foxypoxy.models.Update;
+import com.krld.foxypoxy.tlmodels.Update;
 import com.krld.foxypoxy.responses.ResponseGetUpdates;
 import com.krld.foxypoxy.util.JsonUtils;
 import com.krld.foxypoxy.util.VertxUtils;
@@ -42,9 +42,6 @@ public class TLClientVerticle extends AbstractVerticle {
                 origString -> {
                     sendEventBus(Addresses.NEW_UPDATE, origString);
                     ResponseGetUpdates getUpdates = gson.fromJson(origString, ResponseGetUpdates.class);
-                    if (Build.DEBUG) {
-                        FLog.d(LOG_TAG, "get update " + gson.toJson(getUpdates));
-                    }
                     for (Update update : getUpdates.result) {
                         offset = update.updateId + 1;
                     }

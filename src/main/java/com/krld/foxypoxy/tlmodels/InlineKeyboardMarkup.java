@@ -1,6 +1,6 @@
-package com.krld.foxypoxy.models;
+package com.krld.foxypoxy.tlmodels;
 
-import com.krld.foxypoxy.models.buttons.InlineKeyboardButton;
+import com.krld.foxypoxy.tlmodels.buttons.InlineKeyboardButton;
 
 import java.util.List;
 
