@@ -1,14 +1,17 @@
 package com.krld.foxypoxy.game;
 
+import com.krld.foxypoxy.Build;
 import com.krld.foxypoxy.game.models.Player;
 import com.krld.foxypoxy.game.models.Symbols;
 import com.krld.foxypoxy.game.models.Tile;
 import com.krld.foxypoxy.tlmodels.Message;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+@SuppressWarnings("ForLoopReplaceableByForEach")
 public class Game {
     public static final int WORLD_WIDTH = 100;
     public static final int WORLD_HEIGHT = 100;
@@ -24,6 +27,10 @@ public class Game {
         Player player = players.get(usrId);
         if (player == null) {
             player = new Player(message.from, new Point(FOV_WIDTH / 2, FOV_HEIGHT / 2));
+            if (Build.DEBUG) {
+                players.put(-1, new Player(-1, "Debug", new Point(2, 3)));
+                players.put(-2, new Player(-2, "Debug", new Point(4, 9)));
+            }
             players.put(usrId, player);
         }
         return player;
@@ -54,6 +61,7 @@ public class Game {
         String out = "";
         int[] map = getGroundMap();
 
+        java.util.List<Player> localPlayers = new ArrayList<>(players.values());
         Point playerPos = curPlayer.getPos();
         //calculate field of view
         int wX = Math.min(Math.max(playerPos.x - FOV_WIDTH / 2, 0), WORLD_WIDTH - FOV_WIDTH / 2);//window x
@@ -64,6 +72,26 @@ public class Game {
             for (int x = wX; x < wX + FOV_WIDTH; x++) {
                 if (x == playerPos.x && y == playerPos.y) {
                     sb.append(Symbols.PLAYER_CURRENT);
+                    continue;
+                }
+
+                boolean continue_ = false;
+                Player player = null;
+                for (int i = 0; i < localPlayers.size(); i++) {
+                    player = localPlayers.get(i);
+                    if (x == player.getPos().x && y == player.getPos().y) {
+                        sb.append(player == curPlayer ? Symbols.PLAYER_CURRENT : Symbols.PLAYER_OTHER);
+                        continue_ = true;
+                        break;
+                    } else {
+                        player = null;
+                    }
+                }
+                if (player != null) {
+                    localPlayers.remove(player);
+                }
+
+                if (continue_) {
                     continue;
                 }
                 int currentTile = map[y * WORLD_WIDTH + x];
@@ -86,7 +114,7 @@ public class Game {
             sb.append('\n');
 
         }
-        out = "```java\n" + sb.toString() + "```"; //simple lang
+        out = "`" + sb.toString() + "`"; //simple lang
         return out;
     }
 }

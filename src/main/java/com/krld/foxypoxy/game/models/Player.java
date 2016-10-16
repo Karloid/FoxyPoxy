@@ -7,7 +7,7 @@ import java.awt.*;
 
 public class Player {
 
-    private Integer id;
+    private int id;
     private String name;
     private Point pos;
 
@@ -23,6 +23,12 @@ public class Player {
         } else {
             name = "Unknown";
         }
+        this.pos = pos;
+    }
+
+    public Player(Integer id, String name, Point pos) {
+        this.id = id;
+        this.name = name;
         this.pos = pos;
     }
 
