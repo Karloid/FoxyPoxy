@@ -19,6 +19,7 @@ public class HttpDecorator {
         token = VertxUtils.getToken();
     }
 
+    //TODO one method for all
     public <T> void post(String method, Object body, Action1<T> success, Action1<TlError> fail, Class<T> respClass) { //TODO calculate request time
         try {
             long startTime = System.currentTimeMillis();

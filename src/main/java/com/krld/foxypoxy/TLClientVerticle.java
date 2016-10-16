@@ -40,9 +40,11 @@ public class TLClientVerticle extends AbstractVerticle {
     private void getUpdates() {
         httpDecorator.getString("/bot" + token + String.format("/getUpdates?offset=%d&limit=%d&timeout=%d", offset, 100, 15), //TODO move token to somewhere
                 origString -> {
-                    FLog.d(LOG_TAG, "get response from server " + origString);
                     sendEventBus(Addresses.NEW_UPDATE, origString);
                     ResponseGetUpdates getUpdates = gson.fromJson(origString, ResponseGetUpdates.class);
+                    if (Build.DEBUG) {
+                        FLog.d(LOG_TAG, "get update " + gson.toJson(getUpdates));
+                    }
                     for (Update update : getUpdates.result) {
                         offset = update.updateId + 1;
                     }
