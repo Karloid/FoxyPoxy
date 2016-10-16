@@ -19,7 +19,7 @@ public class HttpDecorator {
         token = VertxUtils.getToken();
     }
 
-    public <T> void post(String method, Object body, Action1<T> success, Action1<MatrixError> fail, Class<T> respClass) { //TODO calculate request time
+    public <T> void post(String method, Object body, Action1<T> success, Action1<TlError> fail, Class<T> respClass) { //TODO calculate request time
         try {
             long startTime = System.currentTimeMillis();
             httpClient.post(method, event -> handleResponse(success, fail, respClass, event, startTime))
@@ -30,7 +30,7 @@ public class HttpDecorator {
         }
     }
 
-    public <T> void put(String method, Object body, Action1<T> success, Action1<MatrixError> fail, Class<T> respClass) {
+    public <T> void put(String method, Object body, Action1<T> success, Action1<TlError> fail, Class<T> respClass) {
         try {
             long startTime = System.currentTimeMillis();
             httpClient.put(method, event -> handleResponse(success, fail, respClass, event, startTime))
@@ -41,7 +41,7 @@ public class HttpDecorator {
         }
     }
 
-    public <T> void get(String method, Action1<T> success, Action1<MatrixError> fail, Class<T> respClass) {
+    public <T> void get(String method, Action1<T> success, Action1<TlError> fail, Class<T> respClass) {
         try {
             long startTime = System.currentTimeMillis();
             httpClient.get(method, event -> handleResponse(success, fail, respClass, event, startTime))
@@ -52,7 +52,7 @@ public class HttpDecorator {
         }
     }
 
-    public void getString(String method, Action1<String> success, Action1<MatrixError> fail) {
+    public void getString(String method, Action1<String> success, Action1<TlError> fail) {
         try {
             long startTime = System.currentTimeMillis();//TODO refactor
             httpClient.get(method, event -> handleResponse(success, fail, String.class, event, startTime))
@@ -63,15 +63,15 @@ public class HttpDecorator {
         }
     }
 
-    private Handler<Throwable> getExceptionHandler(Action1<MatrixError> fail) {
+    private Handler<Throwable> getExceptionHandler(Action1<TlError> fail) {
         return event -> {
             if (fail != null) {
-                fail.call(new MatrixError(event));
+                fail.call(new TlError(event));
             }
         };
     }
 
-    private <T> HttpClientResponse handleResponse(Action1<T> success, Action1<MatrixError> fail, Class<T> respClass, HttpClientResponse event, long startTime) {
+    private <T> HttpClientResponse handleResponse(Action1<T> success, Action1<TlError> fail, Class<T> respClass, HttpClientResponse event, long startTime) {
         return event.bodyHandler(buffer -> {
             //FLog.d("x", "requested processed in " + (System.currentTimeMillis() - startTime) + "ms");
             String response = buffer.getString(0, buffer.length());
@@ -90,11 +90,11 @@ public class HttpDecorator {
                 if (fail == null) {
                     return;
                 }
-                MatrixError error;
+                TlError error;
                 try {
-                    error = gson.fromJson(response, MatrixError.class);
+                    error = gson.fromJson(response, TlError.class);
                 } catch (Exception e) {
-                    error = new MatrixError();
+                    error = new TlError();
                 }
                 fail.call(error);
             }

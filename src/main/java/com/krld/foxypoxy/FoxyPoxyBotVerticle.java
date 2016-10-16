@@ -15,10 +15,15 @@ import com.krld.foxypoxy.util.VertxUtils;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.http.HttpClient;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 public class FoxyPoxyBotVerticle extends AbstractVerticle implements BotDelegate {
     private static final String LOG_TAG = "FoxyPoxyBotVerticle";
+
+    private static final int FIELD_HEIGHT = 12;
+    private static final int FIELD_WIDTH = 28;
+
     private TLClientVerticle tlClientVerticle;
     private HttpClient httpClient;
     private Gson gson;
@@ -47,8 +52,25 @@ public class FoxyPoxyBotVerticle extends AbstractVerticle implements BotDelegate
             return;
         }
         System.out.println(message.from.firstName + " " + message.from.lastName + ": " + message.text);
-        String ourMessage = "Hello " + message.from.firstName + " " +
-                message.from.lastName + (Math.random() > 0.5f ? ". You are cool :>" : ". Sorry, you not cool");
+        String ourMessage = "";
+        Point center = new Point(FIELD_WIDTH / 2, FIELD_HEIGHT / 2);
+        for (int y = 0; y <= FIELD_HEIGHT; y++) {
+            for (int x = 0; x <= FIELD_WIDTH; x++) {
+                double r = Math.random();
+                if (x == center.x && y == center.y) {
+                    ourMessage += "@";
+                } else if (r < 0.25) {
+                    ourMessage += ",";
+                } else if (r < 0.5) {
+                    ourMessage += "_";
+                } else {
+                    ourMessage += ".";
+                }
+            }
+            ourMessage += "\n";
+        }
+        ourMessage = "```java\n" + ourMessage + "```"; //simple lang
+
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
         keyboard.inlineKeyboard = new ArrayList<>();
 

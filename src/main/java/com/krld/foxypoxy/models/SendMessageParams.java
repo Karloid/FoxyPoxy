@@ -4,6 +4,7 @@ public class SendMessageParams {
     public Integer chatId;
     public String text;
     public InlineKeyboardMarkup replyMarkup;
+    public String parseMode = "Markdown";//HTML
 
     public SendMessageParams(Integer chatId, String text, InlineKeyboardMarkup replyMarkup) {
         this.chatId = chatId;
