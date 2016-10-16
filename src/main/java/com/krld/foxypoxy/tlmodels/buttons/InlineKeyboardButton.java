@@ -15,6 +15,6 @@ public class InlineKeyboardButton {
 
     public InlineKeyboardButton(String text) {
         this.text = text;
-        callbackData = "1";
+        callbackData = "_";
     }
 }

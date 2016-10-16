@@ -1,13 +1,12 @@
 package com.krld.foxypoxy;
 
 import com.google.gson.Gson;
-import com.krld.foxypoxy.gmodels.Buttons;
-import com.krld.foxypoxy.gmodels.Game;
-import com.krld.foxypoxy.gmodels.Player;
-import com.krld.foxypoxy.tlmodels.*;
-import com.krld.foxypoxy.tlmodels.buttons.InlineKeyboardButton;
+import com.krld.foxypoxy.game.Game;
+import com.krld.foxypoxy.game.models.Buttons;
+import com.krld.foxypoxy.game.models.Player;
 import com.krld.foxypoxy.network.HttpDecorator;
 import com.krld.foxypoxy.responses.ResponseGetUpdates;
+import com.krld.foxypoxy.tlmodels.*;
 import com.krld.foxypoxy.util.Addresses;
 import com.krld.foxypoxy.util.FLog;
 import com.krld.foxypoxy.util.JsonUtils;
@@ -15,11 +14,7 @@ import com.krld.foxypoxy.util.VertxUtils;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.http.HttpClient;
 
-import java.awt.*;
-import java.util.ArrayList;
-
-import static com.krld.foxypoxy.gmodels.Game.FIELD_HEIGHT;
-import static com.krld.foxypoxy.gmodels.Game.FIELD_WIDTH;
+import static com.krld.foxypoxy.tlmodels.TLHelper.getKeyboard;
 
 public class GameLogic extends AbstractVerticle implements BotDelegate {
     private static final String LOG_TAG = "GameLogic";
@@ -55,8 +50,8 @@ public class GameLogic extends AbstractVerticle implements BotDelegate {
             return;
         }
         System.out.println(message.from.firstName + " " + message.from.lastName + ": " + message.text);
-        Player player = game.getPlayer(message.chat.id);
-        String ourMessage = render(player);
+        Player player = game.getPlayer(message);
+        String ourMessage = game.render(player);
         InlineKeyboardMarkup keyboard = getKeyboard();
         sendMessage(message.chat.id, ourMessage, keyboard);
     }
@@ -66,7 +61,7 @@ public class GameLogic extends AbstractVerticle implements BotDelegate {
             return;
         }
         FLog.d(LOG_TAG, "onCallbackQuery");
-        Player player = game.getPlayer(query.message.chat.id);
+        Player player = game.getPlayer(query.message);
         int x = player.getPos().x, y = player.getPos().y;
         switch (query.data) {
             case Buttons.TOP:
@@ -86,33 +81,11 @@ public class GameLogic extends AbstractVerticle implements BotDelegate {
 
         }
         player.getPos().setLocation(x, y);
-        editMessage(query.message.chat.id, query.message.messageId, render(player), getKeyboard());
+        editMessage(query.message.chat.id, query.message.messageId, game.render(player), getKeyboard());
         //TODO parse action
         //TODO get new field
         //TODO send edit message
         //TODO render last action
-    }
-
-    private String render(Player player) {
-        String out = "";
-        Point playerPos = player.getPos();
-        for (int y = 0; y <= FIELD_HEIGHT; y++) {
-            for (int x = 0; x <= FIELD_WIDTH; x++) {
-                double r = Math.random();
-                if (x == playerPos.x && y == playerPos.y) {
-                    out += "@";
-                } else if (r < 0.25) {
-                    out += ",";
-                } else if (r < 0.5) {
-                    out += "_";
-                } else {
-                    out += ".";
-                }
-            }
-            out += "\n";
-        }
-        out = "```java\n" + out + "```"; //simple lang
-        return out;
     }
 
     private void sendMessage(Integer id, String ourMessage, InlineKeyboardMarkup keyboard) {
@@ -129,29 +102,5 @@ public class GameLogic extends AbstractVerticle implements BotDelegate {
                 body,
                 value -> FLog.d(LOG_TAG, "done edit message "),
                 e -> FLog.e(LOG_TAG, "error " + e), Object.class);
-    }
-
-    private InlineKeyboardMarkup getKeyboard() {
-        InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
-        keyboard.inlineKeyboard = new ArrayList<>();
-
-        ArrayList<InlineKeyboardButton> buttons = new ArrayList<>();
-        buttons.add(new InlineKeyboardButton(" "));
-        buttons.add(new InlineKeyboardButton("⬆️⬆️⬆️", Buttons.TOP));
-        buttons.add(new InlineKeyboardButton(" "));
-        keyboard.inlineKeyboard.add(buttons);
-
-        buttons = new ArrayList<>();
-        buttons.add(new InlineKeyboardButton("⬅⬅⬅️️", Buttons.LEFT));
-        buttons.add(new InlineKeyboardButton("Refresh", Buttons.REFRESH));
-        buttons.add(new InlineKeyboardButton("➡➡➡️", Buttons.RIGHT));
-        keyboard.inlineKeyboard.add(buttons);
-
-        buttons = new ArrayList<>();
-        buttons.add(new InlineKeyboardButton(" "));
-        buttons.add(new InlineKeyboardButton("⬇⬇️⬇️️", Buttons.BOT));
-        buttons.add(new InlineKeyboardButton(" "));
-        keyboard.inlineKeyboard.add(buttons);
-        return keyboard;
     }
 }

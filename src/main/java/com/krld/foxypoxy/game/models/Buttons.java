@@ -1,4 +1,4 @@
-package com.krld.foxypoxy.gmodels;
+package com.krld.foxypoxy.game.models;
 
 public class Buttons {
     public static final String TOP = "1";
